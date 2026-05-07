@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - College Notes Sharing{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="sidebar">
+        <h2>{{ current_user.username }}</h2>
+        <p>Role: <strong>{{ current_user.role.capitalize() }}</strong></p>
+        <a href="{{ url_for('profile') }}" class="btn">Profile</a>
+        {% if current_user.role == 'faculty' %}
+            <a href="{{ url_for('upload') }}" class="btn">Upload Note</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <h1>Notes Dashboard</h1>
+        
+        <div class="search-container">
+            <form method="GET" action="{{ url_for('dashboard') }}" class="search-form">
+                <input type="text" name="search" placeholder="Search notes..." value="{{ search or '' }}">
+                <select name="department">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                        <option value="{{ dept }}" {% if department == dept %}selected{% endif %}>{{ dept }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn">Filter</button>
+                <a href="{{ url_for('dashboard') }}" class="btn">Clear</a>
+            </form>
+        </div>
+
+        {% if grouped_notes %}
+            {% for dept in departments %}
+                {% if dept in grouped_notes %}
+                    <div class="department">
+                        <h2>{{ dept }}</h2>
+                        {% for subject in grouped_notes[dept] %}
+                            <div class="subject">
+                                <h3>{{ subject }}</h3>
+                                <ul>
+                                    {% for note in grouped_notes[dept][subject] %}
+                                        <li>
+                                            <div class="note-info">
+                                                <strong>{{ note.title }}</strong>
+                                                <span class="uploaded-by">by {{ note.uploader.username }}</span>
+                                            </div>
+                                            <div class="note-actions">
+                                                {% if current_user.role == 'student' %}
+                                                    <a href="{{ url_for('download', note_id=note.id) }}" class="btn btn-small">Download</a>
+                                                {% elif current_user.role == 'faculty' and note.uploaded_by == current_user.id %}
+                                                    <form action="{{ url_for('delete', note_id=note.id) }}" method="POST" style="display:inline;">
+                                                        <button type="submit" class="btn btn-small btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                                    </form>
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p class="no-notes">No notes available.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

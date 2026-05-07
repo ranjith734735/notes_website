@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Note - College Notes Sharing{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Upload Note</h1>
+    <form method="POST" enctype="multipart/form-data" class="upload-form">
+        <input type="text" name="title" placeholder="Note Title" required>
+        <textarea name="subject" placeholder="Subject/Chapter Name" required></textarea>
+        <select name="department" required>
+            <option value="">Select Department</option>
+            {% for dept in departments %}
+                <option value="{{ dept }}">{{ dept }}</option>
+            {% endfor %}
+        </select>
+        <input type="file" name="file" accept=".pdf,.doc,.docx,.txt,.ppt,.pptx" required>
+        <button type="submit" class="btn">Upload</button>
+    </form>
+    <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a>
+</div>
+{% endblock %}

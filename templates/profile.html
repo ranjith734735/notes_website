@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - College Notes Sharing{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>User Profile</h1>
+    <div class="profile-card">
+        <p><strong>Username:</strong> {{ current_user.username }}</p>
+        <p><strong>Role:</strong> {{ current_user.role.capitalize() }}</p>
+        {% if current_user.role == 'faculty' %}
+            <p><strong>Notes Uploaded:</strong> {{ uploaded_count }}</p>
+        {% endif %}
+    </div>
+    <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a>
+</div>
+{% endblock %}
